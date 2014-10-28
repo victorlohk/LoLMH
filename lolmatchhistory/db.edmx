@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="lolmatchhistoryModel.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.6" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CHAMPION">
+          <Key>
+            <PropertyRef Name="CHAMPION_ID" />
+          </Key>
+          <Property Name="CHAMPION_ID" Type="uint" Nullable="false" />
+          <Property Name="CHAMPIONTITLE" Type="varchar" MaxLength="45" />
+          <Property Name="CHAMPIONNAME" Type="varchar" MaxLength="45" />
+        </EntityType>
+        <EntityType Name="GAME">
+          <Key>
+            <PropertyRef Name="GAME_ID" />
+          </Key>
+          <Property Name="GAME_ID" Type="uint" Nullable="false" />
+          <Property Name="GAMEDATE" Type="datetime" Precision="0" />
+          <Property Name="MAPTYPE" Type="varchar" MaxLength="45" />
+          <Property Name="GAMEMODE" Type="varchar" MaxLength="45" />
+          <Property Name="GAMESUBTYPE" Type="varchar" MaxLength="45" />
+          <Property Name="IPEARNED" Type="int" />
+          <Property Name="INVALID" Type="tinyint" />
+          <Property Name="CREATIONDATE" Type="datetime" Precision="0" />
+          <Property Name="CREATIONUSER" Type="varchar" MaxLength="45" />
+        </EntityType>
+        <EntityType Name="gamestat">
+          <Key>
+            <PropertyRef Name="GAMESTAT_ID" />
+          </Key>
+          <Property Name="GAMESTAT_ID" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GAME_ID" Type="uint" />
+          <Property Name="SUMMONER_ID" Type="uint" />
+          <Property Name="SUMMONERLEVEL" Type="int" />
+          <Property Name="CHAMPION_ID" Type="uint" />
+          <Property Name="CHAMPIONLEVEL" Type="int" />
+          <Property Name="SPELL1_ID" Type="uint" />
+          <Property Name="SPELL2_ID" Type="uint" />
+          <Property Name="TEAM_ID" Type="uint" />
+          <Property Name="WIN" Type="tinyint" />
+          <Property Name="TIMEPLAYED" Type="time" Precision="0" />
+          <Property Name="CHAMPIONSKILLED" Type="int" />
+          <Property Name="NUMDEATHS" Type="int" />
+          <Property Name="ASSISTS" Type="int" />
+          <Property Name="KILLINGSPREES" Type="int" />
+          <Property Name="LARGESTKILLINGSPREE" Type="int" />
+          <Property Name="LARGESTMULTIKILL" Type="int" />
+          <Property Name="FIRSTBLOOD" Type="int" />
+          <Property Name="DOUBLEKILLS" Type="int" />
+          <Property Name="TRIPLEKILLS" Type="int" />
+          <Property Name="QUADRAKILLS" Type="int" />
+          <Property Name="PENTAKILLS" Type="int" />
+          <Property Name="UNREALKILLS" Type="int" />
+          <Property Name="TURRETSKILLED" Type="int" />
+          <Property Name="BARRACKSKILLED" Type="int" />
+          <Property Name="NEXUSKILLED" Type="tinyint" />
+          <Property Name="GOLD" Type="int" />
+          <Property Name="GOLDEARNED" Type="int" />
+          <Property Name="GOLDSPENT" Type="int" />
+          <Property Name="ITEMSPURCHASED" Type="int" />
+          <Property Name="NUMITEMSBOUGHT" Type="int" />
+          <Property Name="CONSUMABLESPURCHASED" Type="int" />
+          <Property Name="ITEM0" Type="int" />
+          <Property Name="ITEM1" Type="int" />
+          <Property Name="ITEM2" Type="int" />
+          <Property Name="ITEM3" Type="int" />
+          <Property Name="ITEM4" Type="int" />
+          <Property Name="ITEM5" Type="int" />
+          <Property Name="ITEM6" Type="int" />
+          <Property Name="LEGENDARYITEMSCREATED" Type="int" />
+          <Property Name="TOTALDAMAGEDEALT" Type="int" />
+          <Property Name="TOTALDAMAGEDEALTTOCHAMPIONS" Type="int" />
+          <Property Name="DAMAGEDEALTPLAYER" Type="int" />
+          <Property Name="PHYSICALDAMAGEDEALTPLAYER" Type="int" />
+          <Property Name="PHYSICALDAMAGEDEALTTOCHAMPIONS" Type="int" />
+          <Property Name="LARGESTCRITICALSTRIKE" Type="int" />
+          <Property Name="MAGICDAMAGEDEALTPLAYER" Type="int" />
+          <Property Name="MAGICDAMAGEDEALTTOCHAMPIONS" Type="int" />
+          <Property Name="TRUEDAMAGEDEALTPLAYER" Type="int" />
+          <Property Name="TRUEDAMAGEDEALTTOCHAMPIONS" Type="int" />
+          <Property Name="TOTALDAMAGETAKEN" Type="int" />
+          <Property Name="PHYSICALDAMAGETAKEN" Type="int" />
+          <Property Name="MAGICDAMAGETAKEN" Type="int" />
+          <Property Name="TRUEDAMAGETAKEN" Type="int" />
+          <Property Name="TOTALHEAL" Type="int" />
+          <Property Name="TOTALUNITSHEALED" Type="int" />
+          <Property Name="TOTALTIMECROWDCONTROLDEALT" Type="time" Precision="0" />
+          <Property Name="MINIONSDENIED" Type="int" />
+          <Property Name="MINIONSKILLED" Type="int" />
+          <Property Name="NEUTRALMINIONSKILLED" Type="int" />
+          <Property Name="NEUTRALMINIONSKILLEDYOURJUNGLE" Type="int" />
+          <Property Name="NEUTRALMINIONSKILLEDENEMYJUNGLE" Type="int" />
+          <Property Name="SUPERMONSTERKILLED" Type="int" />
+          <Property Name="SIGHTWARDSBOUGHT" Type="int" />
+          <Property Name="VISIONWARDSBOUGHT" Type="int" />
+          <Property Name="WARDPLACED" Type="int" />
+          <Property Name="WARDKILLED" Type="int" />
+        </EntityType>
+        <EntityType Name="SUMMONER">
+          <Key>
+            <PropertyRef Name="SUMMONER_ID" />
+          </Key>
+          <Property Name="SUMMONER_ID" Type="uint" Nullable="false" />
+          <Property Name="SUMMONERNAME" Type="varchar" MaxLength="45" />
+          <Property Name="PROFILEICON_ID" Type="int" />
+          <Property Name="REVISIONDATE" Type="datetime" Precision="0" />
+          <Property Name="LEVEL" Type="smallint" />
+        </EntityType>
+        <EntityContainer Name="lolmatchhistoryModelStoreContainer">
+          <EntitySet Name="CHAMPION" EntityType="Self.CHAMPION" Schema="lolmatchhistory" store:Type="Tables" />
+          <EntitySet Name="GAME" EntityType="Self.GAME" Schema="lolmatchhistory" store:Type="Tables" />
+          <EntitySet Name="gamestat" EntityType="Self.gamestat" Schema="lolmatchhistory" store:Type="Tables" />
+          <EntitySet Name="SUMMONER" EntityType="Self.SUMMONER" Schema="lolmatchhistory" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="lolmatchhistoryModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="CHAMPION">
+          <Key>
+            <PropertyRef Name="CHAMPION_ID" />
+          </Key>
+          <Property Name="CHAMPION_ID" Nullable="false" Type="Int64" />
+          <Property Name="CHAMPIONTITLE" MaxLength="45" FixedLength="false" Unicode="false" Type="String" />
+          <Property Name="CHAMPIONNAME" MaxLength="45" FixedLength="false" Unicode="false" Type="String" />
+        </EntityType>
+        <EntityType Name="GAME">
+          <Key>
+            <PropertyRef Name="GAME_ID" />
+          </Key>
+          <Property Name="GAME_ID" Nullable="false" Type="Int64" />
+          <Property Name="GAMEDATE" Type="DateTime" />
+          <Property Name="MAPTYPE" MaxLength="45" FixedLength="false" Unicode="false" Type="String" />
+          <Property Name="GAMEMODE" MaxLength="45" FixedLength="false" Unicode="false" Type="String" />
+          <Property Name="GAMESUBTYPE" MaxLength="45" FixedLength="false" Unicode="false" Type="String" />
+          <Property Name="IPEARNED" Type="Int32" />
+          <Property Name="INVALID" Type="SByte" />
+          <Property Name="CREATIONDATE" Type="DateTime" />
+          <Property Name="CREATIONUSER" MaxLength="45" FixedLength="false" Unicode="false" Type="String" />
+        </EntityType>
+        <EntityType Name="SUMMONER">
+          <Key>
+            <PropertyRef Name="SUMMONER_ID" />
+          </Key>
+          <Property Name="SUMMONER_ID" Nullable="false" Type="Int64" />
+          <Property Name="SUMMONERNAME" MaxLength="45" FixedLength="false" Unicode="false" Type="String" />
+          <Property Name="PROFILEICON_ID" Type="Int32" />
+          <Property Name="REVISIONDATE" Type="DateTime" />
+          <Property Name="LEVEL" Type="Int16" />
+        </EntityType>
+        <EntityContainer Name="lolmatchhistoryEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="CHAMPIONs" EntityType="Self.CHAMPION" />
+          <EntitySet Name="GAMEs" EntityType="Self.GAME" />
+          <EntitySet Name="SUMMONERs" EntityType="Self.SUMMONER" />
+          <EntitySet Name="GAMESTATs" EntityType="lolmatchhistoryModel.GAMESTAT" />
+        </EntityContainer>
+        <EntityType Name="GAMESTAT">
+          <Key>
+            <PropertyRef Name="GAMESTAT_ID" />
+          </Key>
+          <Property Name="GAMESTAT_ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GAME_ID" Type="Int64" />
+          <Property Name="SUMMONER_ID" Type="Int64" />
+          <Property Name="SUMMONERLEVEL" Type="Int32" />
+          <Property Name="CHAMPION_ID" Type="Int64" />
+          <Property Name="CHAMPIONLEVEL" Type="Int32" />
+          <Property Name="SPELL1_ID" Type="Int64" />
+          <Property Name="SPELL2_ID" Type="Int64" />
+          <Property Name="TEAM_ID" Type="Int64" />
+          <Property Name="WIN" Type="SByte" />
+          <Property Name="TIMEPLAYED" Type="Time" />
+          <Property Name="CHAMPIONSKILLED" Type="Int32" />
+          <Property Name="NUMDEATHS" Type="Int32" />
+          <Property Name="ASSISTS" Type="Int32" />
+          <Property Name="KILLINGSPREES" Type="Int32" />
+          <Property Name="LARGESTKILLINGSPREE" Type="Int32" />
+          <Property Name="LARGESTMULTIKILL" Type="Int32" />
+          <Property Name="FIRSTBLOOD" Type="Int32" />
+          <Property Name="DOUBLEKILLS" Type="Int32" />
+          <Property Name="TRIPLEKILLS" Type="Int32" />
+          <Property Name="QUADRAKILLS" Type="Int32" />
+          <Property Name="PENTAKILLS" Type="Int32" />
+          <Property Name="UNREALKILLS" Type="Int32" />
+          <Property Name="TURRETSKILLED" Type="Int32" />
+          <Property Name="BARRACKSKILLED" Type="Int32" />
+          <Property Name="NEXUSKILLED" Type="SByte" />
+          <Property Name="GOLD" Type="Int32" />
+          <Property Name="GOLDEARNED" Type="Int32" />
+          <Property Name="GOLDSPENT" Type="Int32" />
+          <Property Name="ITEMSPURCHASED" Type="Int32" />
+          <Property Name="NUMITEMSBOUGHT" Type="Int32" />
+          <Property Name="CONSUMABLESPURCHASED" Type="Int32" />
+          <Property Name="ITEM0" Type="Int32" />
+          <Property Name="ITEM1" Type="Int32" />
+          <Property Name="ITEM2" Type="Int32" />
+          <Property Name="ITEM3" Type="Int32" />
+          <Property Name="ITEM4" Type="Int32" />
+          <Property Name="ITEM5" Type="Int32" />
+          <Property Name="ITEM6" Type="Int32" />
+          <Property Name="LEGENDARYITEMSCREATED" Type="Int32" />
+          <Property Name="TOTALDAMAGEDEALT" Type="Int32" />
+          <Property Name="TOTALDAMAGEDEALTTOCHAMPIONS" Type="Int32" />
+          <Property Name="DAMAGEDEALTPLAYER" Type="Int32" />
+          <Property Name="PHYSICALDAMAGEDEALTPLAYER" Type="Int32" />
+          <Property Name="PHYSICALDAMAGEDEALTTOCHAMPIONS" Type="Int32" />
+          <Property Name="LARGESTCRITICALSTRIKE" Type="Int32" />
+          <Property Name="MAGICDAMAGEDEALTPLAYER" Type="Int32" />
+          <Property Name="MAGICDAMAGEDEALTTOCHAMPIONS" Type="Int32" />
+          <Property Name="TRUEDAMAGEDEALTPLAYER" Type="Int32" />
+          <Property Name="TRUEDAMAGEDEALTTOCHAMPIONS" Type="Int32" />
+          <Property Name="TOTALDAMAGETAKEN" Type="Int32" />
+          <Property Name="PHYSICALDAMAGETAKEN" Type="Int32" />
+          <Property Name="MAGICDAMAGETAKEN" Type="Int32" />
+          <Property Name="TRUEDAMAGETAKEN" Type="Int32" />
+          <Property Name="TOTALHEAL" Type="Int32" />
+          <Property Name="TOTALUNITSHEALED" Type="Int32" />
+          <Property Name="TOTALTIMECROWDCONTROLDEALT" Type="Time" />
+          <Property Name="MINIONSDENIED" Type="Int32" />
+          <Property Name="MINIONSKILLED" Type="Int32" />
+          <Property Name="NEUTRALMINIONSKILLED" Type="Int32" />
+          <Property Name="NEUTRALMINIONSKILLEDYOURJUNGLE" Type="Int32" />
+          <Property Name="NEUTRALMINIONSKILLEDENEMYJUNGLE" Type="Int32" />
+          <Property Name="SUPERMONSTERKILLED" Type="Int32" />
+          <Property Name="SIGHTWARDSBOUGHT" Type="Int32" />
+          <Property Name="VISIONWARDSBOUGHT" Type="Int32" />
+          <Property Name="WARDPLACED" Type="Int32" />
+          <Property Name="WARDKILLED" Type="Int32" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="lolmatchhistoryModelStoreContainer" CdmEntityContainer="lolmatchhistoryEntities">
+          <EntitySetMapping Name="CHAMPIONs">
+            <EntityTypeMapping TypeName="lolmatchhistoryModel.CHAMPION">
+              <MappingFragment StoreEntitySet="CHAMPION">
+                <ScalarProperty Name="CHAMPION_ID" ColumnName="CHAMPION_ID" />
+                <ScalarProperty Name="CHAMPIONTITLE" ColumnName="CHAMPIONTITLE" />
+                <ScalarProperty Name="CHAMPIONNAME" ColumnName="CHAMPIONNAME" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GAMEs">
+            <EntityTypeMapping TypeName="lolmatchhistoryModel.GAME">
+              <MappingFragment StoreEntitySet="GAME">
+                <ScalarProperty Name="GAME_ID" ColumnName="GAME_ID" />
+                <ScalarProperty Name="GAMEDATE" ColumnName="GAMEDATE" />
+                <ScalarProperty Name="MAPTYPE" ColumnName="MAPTYPE" />
+                <ScalarProperty Name="GAMEMODE" ColumnName="GAMEMODE" />
+                <ScalarProperty Name="GAMESUBTYPE" ColumnName="GAMESUBTYPE" />
+                <ScalarProperty Name="IPEARNED" ColumnName="IPEARNED" />
+                <ScalarProperty Name="INVALID" ColumnName="INVALID" />
+                <ScalarProperty Name="CREATIONDATE" ColumnName="CREATIONDATE" />
+                <ScalarProperty Name="CREATIONUSER" ColumnName="CREATIONUSER" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SUMMONERs">
+            <EntityTypeMapping TypeName="lolmatchhistoryModel.SUMMONER">
+              <MappingFragment StoreEntitySet="SUMMONER">
+                <ScalarProperty Name="SUMMONER_ID" ColumnName="SUMMONER_ID" />
+                <ScalarProperty Name="SUMMONERNAME" ColumnName="SUMMONERNAME" />
+                <ScalarProperty Name="PROFILEICON_ID" ColumnName="PROFILEICON_ID" />
+                <ScalarProperty Name="REVISIONDATE" ColumnName="REVISIONDATE" />
+                <ScalarProperty Name="LEVEL" ColumnName="LEVEL" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GAMESTATs">
+            <EntityTypeMapping TypeName="lolmatchhistoryModel.GAMESTAT">
+              <MappingFragment StoreEntitySet="gamestat">
+                <ScalarProperty Name="WARDKILLED" ColumnName="WARDKILLED" />
+                <ScalarProperty Name="WARDPLACED" ColumnName="WARDPLACED" />
+                <ScalarProperty Name="VISIONWARDSBOUGHT" ColumnName="VISIONWARDSBOUGHT" />
+                <ScalarProperty Name="SIGHTWARDSBOUGHT" ColumnName="SIGHTWARDSBOUGHT" />
+                <ScalarProperty Name="SUPERMONSTERKILLED" ColumnName="SUPERMONSTERKILLED" />
+                <ScalarProperty Name="NEUTRALMINIONSKILLEDENEMYJUNGLE" ColumnName="NEUTRALMINIONSKILLEDENEMYJUNGLE" />
+                <ScalarProperty Name="NEUTRALMINIONSKILLEDYOURJUNGLE" ColumnName="NEUTRALMINIONSKILLEDYOURJUNGLE" />
+                <ScalarProperty Name="NEUTRALMINIONSKILLED" ColumnName="NEUTRALMINIONSKILLED" />
+                <ScalarProperty Name="MINIONSKILLED" ColumnName="MINIONSKILLED" />
+                <ScalarProperty Name="MINIONSDENIED" ColumnName="MINIONSDENIED" />
+                <ScalarProperty Name="TOTALTIMECROWDCONTROLDEALT" ColumnName="TOTALTIMECROWDCONTROLDEALT" />
+                <ScalarProperty Name="TOTALUNITSHEALED" ColumnName="TOTALUNITSHEALED" />
+                <ScalarProperty Name="TOTALHEAL" ColumnName="TOTALHEAL" />
+                <ScalarProperty Name="TRUEDAMAGETAKEN" ColumnName="TRUEDAMAGETAKEN" />
+                <ScalarProperty Name="MAGICDAMAGETAKEN" ColumnName="MAGICDAMAGETAKEN" />
+                <ScalarProperty Name="PHYSICALDAMAGETAKEN" ColumnName="PHYSICALDAMAGETAKEN" />
+                <ScalarProperty Name="TOTALDAMAGETAKEN" ColumnName="TOTALDAMAGETAKEN" />
+                <ScalarProperty Name="TRUEDAMAGEDEALTTOCHAMPIONS" ColumnName="TRUEDAMAGEDEALTTOCHAMPIONS" />
+                <ScalarProperty Name="TRUEDAMAGEDEALTPLAYER" ColumnName="TRUEDAMAGEDEALTPLAYER" />
+                <ScalarProperty Name="MAGICDAMAGEDEALTTOCHAMPIONS" ColumnName="MAGICDAMAGEDEALTTOCHAMPIONS" />
+                <ScalarProperty Name="MAGICDAMAGEDEALTPLAYER" ColumnName="MAGICDAMAGEDEALTPLAYER" />
+                <ScalarProperty Name="LARGESTCRITICALSTRIKE" ColumnName="LARGESTCRITICALSTRIKE" />
+                <ScalarProperty Name="PHYSICALDAMAGEDEALTTOCHAMPIONS" ColumnName="PHYSICALDAMAGEDEALTTOCHAMPIONS" />
+                <ScalarProperty Name="PHYSICALDAMAGEDEALTPLAYER" ColumnName="PHYSICALDAMAGEDEALTPLAYER" />
+                <ScalarProperty Name="DAMAGEDEALTPLAYER" ColumnName="DAMAGEDEALTPLAYER" />
+                <ScalarProperty Name="TOTALDAMAGEDEALTTOCHAMPIONS" ColumnName="TOTALDAMAGEDEALTTOCHAMPIONS" />
+                <ScalarProperty Name="TOTALDAMAGEDEALT" ColumnName="TOTALDAMAGEDEALT" />
+                <ScalarProperty Name="LEGENDARYITEMSCREATED" ColumnName="LEGENDARYITEMSCREATED" />
+                <ScalarProperty Name="ITEM6" ColumnName="ITEM6" />
+                <ScalarProperty Name="ITEM5" ColumnName="ITEM5" />
+                <ScalarProperty Name="ITEM4" ColumnName="ITEM4" />
+                <ScalarProperty Name="ITEM3" ColumnName="ITEM3" />
+                <ScalarProperty Name="ITEM2" ColumnName="ITEM2" />
+                <ScalarProperty Name="ITEM1" ColumnName="ITEM1" />
+                <ScalarProperty Name="ITEM0" ColumnName="ITEM0" />
+                <ScalarProperty Name="CONSUMABLESPURCHASED" ColumnName="CONSUMABLESPURCHASED" />
+                <ScalarProperty Name="NUMITEMSBOUGHT" ColumnName="NUMITEMSBOUGHT" />
+                <ScalarProperty Name="ITEMSPURCHASED" ColumnName="ITEMSPURCHASED" />
+                <ScalarProperty Name="GOLDSPENT" ColumnName="GOLDSPENT" />
+                <ScalarProperty Name="GOLDEARNED" ColumnName="GOLDEARNED" />
+                <ScalarProperty Name="GOLD" ColumnName="GOLD" />
+                <ScalarProperty Name="NEXUSKILLED" ColumnName="NEXUSKILLED" />
+                <ScalarProperty Name="BARRACKSKILLED" ColumnName="BARRACKSKILLED" />
+                <ScalarProperty Name="TURRETSKILLED" ColumnName="TURRETSKILLED" />
+                <ScalarProperty Name="UNREALKILLS" ColumnName="UNREALKILLS" />
+                <ScalarProperty Name="PENTAKILLS" ColumnName="PENTAKILLS" />
+                <ScalarProperty Name="QUADRAKILLS" ColumnName="QUADRAKILLS" />
+                <ScalarProperty Name="TRIPLEKILLS" ColumnName="TRIPLEKILLS" />
+                <ScalarProperty Name="DOUBLEKILLS" ColumnName="DOUBLEKILLS" />
+                <ScalarProperty Name="FIRSTBLOOD" ColumnName="FIRSTBLOOD" />
+                <ScalarProperty Name="LARGESTMULTIKILL" ColumnName="LARGESTMULTIKILL" />
+                <ScalarProperty Name="LARGESTKILLINGSPREE" ColumnName="LARGESTKILLINGSPREE" />
+                <ScalarProperty Name="KILLINGSPREES" ColumnName="KILLINGSPREES" />
+                <ScalarProperty Name="ASSISTS" ColumnName="ASSISTS" />
+                <ScalarProperty Name="NUMDEATHS" ColumnName="NUMDEATHS" />
+                <ScalarProperty Name="CHAMPIONSKILLED" ColumnName="CHAMPIONSKILLED" />
+                <ScalarProperty Name="TIMEPLAYED" ColumnName="TIMEPLAYED" />
+                <ScalarProperty Name="WIN" ColumnName="WIN" />
+                <ScalarProperty Name="TEAM_ID" ColumnName="TEAM_ID" />
+                <ScalarProperty Name="SPELL2_ID" ColumnName="SPELL2_ID" />
+                <ScalarProperty Name="SPELL1_ID" ColumnName="SPELL1_ID" />
+                <ScalarProperty Name="CHAMPIONLEVEL" ColumnName="CHAMPIONLEVEL" />
+                <ScalarProperty Name="CHAMPION_ID" ColumnName="CHAMPION_ID" />
+                <ScalarProperty Name="SUMMONERLEVEL" ColumnName="SUMMONERLEVEL" />
+                <ScalarProperty Name="SUMMONER_ID" ColumnName="SUMMONER_ID" />
+                <ScalarProperty Name="GAME_ID" ColumnName="GAME_ID" />
+                <ScalarProperty Name="GAMESTAT_ID" ColumnName="GAMESTAT_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
