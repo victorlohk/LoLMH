@@ -81,5 +81,6 @@ namespace lolmatchhistory
         public Nullable<int> VISIONWARDSBOUGHT { get; set; }
         public Nullable<int> WARDPLACED { get; set; }
         public Nullable<int> WARDKILLED { get; set; }
+        public Nullable<int> IPEARNED { get; set; }
     }
 }

@@ -8,7 +8,9 @@
         <EntityTypeShape EntityType="lolmatchhistoryModel.CHAMPION" PointX="0.75" PointY="4.75" Width="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="lolmatchhistoryModel.GAME" PointX="0.75" PointY="0.75" Width="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="lolmatchhistoryModel.SUMMONER" PointX="5.75" PointY="0.75" Width="1.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="lolmatchhistoryModel.GAMESTAT" Width="1.5" PointX="6.375" PointY="3.75" />
+        <EntityTypeShape EntityType="lolmatchhistoryModel.GAMESTAT" Width="1.5" PointX="3.375" PointY="3.75" />
+        <EntityTypeShape EntityType="lolmatchhistoryModel.ITEM" Width="1.5" PointX="5.375" PointY="3.75" />
+        <EntityTypeShape EntityType="lolmatchhistoryModel.SPELL" Width="1.5" PointX="5.375" PointY="6.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

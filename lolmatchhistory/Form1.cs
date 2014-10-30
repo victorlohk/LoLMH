@@ -56,31 +56,125 @@ namespace lolmatchhistory
 
     #region Configurations
         private const Region region = RiotSharp.Region.na;
-        private List<String> players = new List<String> {"Erndra", "auribug"};
+        private List<String> players = new List<String> {"Erndra", "auribug", "faithinyou", "qoobime", "winkybbb", "macaronny", "dextiny", "arwater", "yolobellchan", "masa123", "o0garcia0o", "izayoisaya", "anymoreromfinder", "belibulu", "everloser", "kreivch", "oocosetteoo", "jinusaly", "otiotu", "staxya"};
         private List<String> includedPlayers = new List<String> {"Erndra", "auribug"};
         private List<String> excludedPlayers = new List<String> { };
         private const opting loadPlyaerOption = opting.optOut;
         private const String UserName = "VICTOR";
     #endregion
 
+        /**********/
+        /** MAIN **/
+        /**********/
         private void form_load(Object sender, EventArgs e)
         {
             try
             {
-                reloadChampions();
-                List<Summoner> summoners = reloadSummoners();
-                if (summoners == null)
-                {
-                    summoners = getSummoners(players);
-                }
-
-                Dictionary<String, List<Game>> summonersGames = loadRecentGames(summoners);
-                this.Close();
+                var start = DateTime.Now;
+                loadRecentGames();
+                //reloadChampions();
+                //reloadItems();
+                //reloadSummonerSpells();
+                MessageBox.Show("#player: " + players.Count + Environment.NewLine + "time spent: " + (DateTime.Now - start).TotalSeconds);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("error caught in " + this.GetType().Name + ":"  + Environment.NewLine + ex.ToString(), "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                  var a = ex;
             }
+            this.Close();
+        }
+
+        private void loadRecentGames()
+        {
+            try
+            {
+                List<Summoner> summoners = reloadSummoners(players);
+                if (summoners == null)
+                {
+                    summoners = getSummoners(players); //not implemented
+                }
+
+                Dictionary<String, List<Game>> summonersGames = loadRecentGames(summoners);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error caught in " + this.GetType().Name + ".main:"  + Environment.NewLine + ex.ToString(), "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+       
+        private List<ItemStatic> reloadItems()
+        {
+            ItemListStatic items;
+            try 
+            {
+                items = staticApi.GetItems(region);
+            }
+            catch (Exception ex)
+            {
+                String custom_msg = "Unable to load latest items data from server.";
+                String message = custom_msg + Environment.NewLine + Environment.NewLine + ex.ToString();
+                MessageBox.Show(message, "Server Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                items = null;
+            }
+            //if (items.Items.Values.ToList()[0].)
+            if (!(items == null || items.Items == null || items.Items.Count <= 0))
+            {
+                using (lolmatchhistoryEntities ctx = new lolmatchhistoryEntities())
+                {
+                    ctx.Database.ExecuteSqlCommand("TRUNCATE TABLE ITEM");
+
+                    foreach (ItemStatic item in items.Items.Values)
+                    {
+                        ITEM model = new ITEM()
+                        {
+                            ITEM_ID = item.Id,
+                            ITEMNAME = item.Name
+                        };
+
+                        ctx.ITEMs.Add(model);
+                    }
+                    ctx.SaveChanges();
+                }
+            }
+            return items.Items.Values.ToList();
+        }
+
+        private List<SummonerSpellStatic> reloadSummonerSpells()
+        {
+            SummonerSpellListStatic spells;
+            try
+            {
+                spells = staticApi.GetSummonerSpells(region);
+            }
+            catch (Exception ex)
+            {
+                String custom_msg = "Unable to load latest summoner spells data from server.";
+                String message = custom_msg + Environment.NewLine + Environment.NewLine + ex.ToString();
+                MessageBox.Show(message, "Server Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                spells = null;
+            }
+
+            if (!(spells == null || spells.SummonerSpells == null || spells.SummonerSpells.Count <= 0))
+            {
+                using (lolmatchhistoryEntities ctx = new lolmatchhistoryEntities())
+                {
+                    ctx.Database.ExecuteSqlCommand("TRUNCATE TABLE SPELL");
+
+                    foreach (SummonerSpellStatic spell in spells.SummonerSpells.Values)
+                    {
+                        SPELL model = new SPELL()
+                        {
+                            SPELL_ID = spell.Id,
+                            SPELLNAME = spell.Name
+                        };
+
+                        ctx.SPELLs.Add(model);
+                    }
+                    ctx.SaveChanges();
+                }
+            }
+            return spells.SummonerSpells.Values.ToList();
         }
 
         private List<ChampionStatic> reloadChampions()
@@ -132,7 +226,7 @@ namespace lolmatchhistory
             return static_champions.Champions.Values.ToList();
         }
 
-        private List<Summoner> reloadSummoners()
+        private List<Summoner> reloadSummoners(List<String> players)
         {
             List<Summoner> summoners;
 
@@ -258,9 +352,10 @@ namespace lolmatchhistory
                             }
 
                             GAMESTAT _gamestat = ctx.GAMESTATs.Where(o => o.GAME_ID == game.GameId && o.SUMMONER_ID == summoner.Id).SingleOrDefault();
-                            if (_gamestat == null)
+                            RawStat stat = game.Statistics;
+                            if (_gamestat == null) //add 
                             {
-                                RawStat stat = game.Statistics;
+                                
                                 _gamestat = new GAMESTAT()
                                 {
                                     GAME_ID = game.GameId,
@@ -273,11 +368,135 @@ namespace lolmatchhistory
                                     TEAM_ID = game.TeamId,
                                     WIN = fromBool(stat.Win),
                                     TIMEPLAYED = stat.TimePlayed,
+                                    IPEARNED = game.IpEarned,
                                     CHAMPIONSKILLED = stat.ChampionsKilled,
                                     NUMDEATHS = stat.NumDeaths,
-                                    ASSISTS = stat.Assists
+                                    ASSISTS = stat.Assists,
+                                    KILLINGSPREES = stat.KillingSprees,
+                                    LARGESTKILLINGSPREE = stat.KillingSprees,
+                                    LARGESTMULTIKILL = stat.LargestMultiKill,
+                                    FIRSTBLOOD = stat.FirstBlood,
+                                    DOUBLEKILLS = stat.DoubleKills,
+                                    TRIPLEKILLS = stat.TripleKills,
+                                    QUADRAKILLS = stat.QuadraKills,
+                                    PENTAKILLS = stat.PentaKills,
+                                    UNREALKILLS = stat.UnrealKills,
+                                    TURRETSKILLED = stat.TurretsKilled,
+                                    BARRACKSKILLED = stat.BarracksKilled,
+                                    NEXUSKILLED = fromBool(stat.NexusKilled),
+                                    GOLD = stat.Gold,
+                                    GOLDEARNED = stat.GoldEarned,
+                                    GOLDSPENT = stat.GoldSpent,
+                                    ITEMSPURCHASED = stat.ItemsPurchased,
+                                    NUMITEMSBOUGHT = stat.NumItemsBought,
+                                    CONSUMABLESPURCHASED = stat.ConsumablesPurchased,
+                                    ITEM0 = stat.Item0,
+                                    ITEM1 = stat.Item1,
+                                    ITEM2 = stat.Item2,
+                                    ITEM3 = stat.Item3,
+                                    ITEM4 = stat.Item4,
+                                    ITEM5 = stat.Item5,
+                                    ITEM6 = stat.Item6,
+                                    LEGENDARYITEMSCREATED = stat.LegendaryItemsCreated,
+                                    TOTALDAMAGEDEALT = stat.TotalDamageDealt,
+                                    TOTALDAMAGEDEALTTOCHAMPIONS = stat.TotalDamageDealtToChampions,
+                                    DAMAGEDEALTPLAYER = stat.DamageDealtPlayer,
+                                    PHYSICALDAMAGEDEALTPLAYER = stat.PhysicalDamageDealtPlayer,
+                                    PHYSICALDAMAGEDEALTTOCHAMPIONS = stat.PhysicalDamageDealtToChampions,
+                                    LARGESTCRITICALSTRIKE = stat.LargestCriticalStrike,
+                                    MAGICDAMAGEDEALTPLAYER = stat.MagicDamageDealtPlayer,
+                                    MAGICDAMAGEDEALTTOCHAMPIONS = stat.MagicDamageDealtToChampions,
+                                    TRUEDAMAGEDEALTPLAYER = stat.TrueDamageDealtPlayer,
+                                    TRUEDAMAGEDEALTTOCHAMPIONS = stat.TrueDamageDealtToChampions,
+                                    TOTALDAMAGETAKEN = stat.TotalDamageTaken,
+                                    PHYSICALDAMAGETAKEN = stat.PhysicalDamageTaken,
+                                    MAGICDAMAGETAKEN = stat.MagicDamageTaken,
+                                    TRUEDAMAGETAKEN = stat.TrueDamageTaken,
+                                    TOTALHEAL = stat.TotalHeal,
+                                    TOTALUNITSHEALED = stat.TotalUnitsHealed,
+                                    TOTALTIMECROWDCONTROLDEALT = stat.TotalTimeCrowdControlDealt,
+                                    MINIONSDENIED = stat.MinionsDenied,
+                                    MINIONSKILLED = stat.MinionsKilled,
+                                    NEUTRALMINIONSKILLED = stat.NeutralMinionsKilled,
+                                    NEUTRALMINIONSKILLEDYOURJUNGLE = stat.NeutralMinionsKilledYourJungle,
+                                    NEUTRALMINIONSKILLEDENEMYJUNGLE = stat.NeutralMinionsKilledEnemyJungle,
+                                    SUPERMONSTERKILLED = stat.SuperMonsterKilled,
+                                    SIGHTWARDSBOUGHT = stat.SightWardsBought,
+                                    VISIONWARDSBOUGHT = stat.VisionWardsBought,
+                                    WARDPLACED = stat.WardPlaced,
+                                    WARDKILLED = stat.WardKilled
                                 };
                                 ctx.GAMESTATs.Add(_gamestat);
+                            }
+                            else //update
+                            {
+                                _gamestat.GAME_ID = game.GameId;
+                                _gamestat.SUMMONER_ID = summoner.Id;
+                                _gamestat.SUMMONERLEVEL = game.Level;
+                                _gamestat.CHAMPION_ID = game.ChampionId;
+                                _gamestat.CHAMPIONLEVEL = stat.Level;
+                                _gamestat.SPELL1_ID = game.SummonerSpell1;
+                                _gamestat.SPELL2_ID = game.SummonerSpell2;
+                                _gamestat.TEAM_ID = game.TeamId;
+                                _gamestat.WIN = fromBool(stat.Win);
+                                _gamestat.TIMEPLAYED = stat.TimePlayed;
+                                _gamestat.IPEARNED = game.IpEarned;
+                                _gamestat.CHAMPIONSKILLED = stat.ChampionsKilled;
+                                _gamestat.NUMDEATHS = stat.NumDeaths;
+                                _gamestat.ASSISTS = stat.Assists;
+                                _gamestat.KILLINGSPREES = stat.KillingSprees;
+                                _gamestat.LARGESTKILLINGSPREE = stat.KillingSprees;
+                                _gamestat.LARGESTMULTIKILL = stat.LargestMultiKill;
+                                _gamestat.FIRSTBLOOD = stat.FirstBlood;
+                                _gamestat.DOUBLEKILLS = stat.DoubleKills;
+                                _gamestat.TRIPLEKILLS = stat.TripleKills;
+                                _gamestat.QUADRAKILLS = stat.QuadraKills;
+                                _gamestat.PENTAKILLS = stat.PentaKills;
+                                _gamestat.UNREALKILLS = stat.UnrealKills;
+                                _gamestat.TURRETSKILLED = stat.TurretsKilled;
+                                _gamestat.BARRACKSKILLED = stat.BarracksKilled;
+                                _gamestat.NEXUSKILLED = fromBool(stat.NexusKilled);
+                                _gamestat.GOLD = stat.Gold;
+                                _gamestat.GOLDEARNED = stat.GoldEarned;
+                                _gamestat.GOLDSPENT = stat.GoldSpent;
+                                _gamestat.ITEMSPURCHASED = stat.ItemsPurchased;
+                                _gamestat.NUMITEMSBOUGHT = stat.NumItemsBought;
+                                _gamestat.CONSUMABLESPURCHASED = stat.ConsumablesPurchased;
+                                _gamestat.ITEM0 = stat.Item0;
+                                _gamestat.ITEM1 = stat.Item1;
+                                _gamestat.ITEM2 = stat.Item2;
+                                _gamestat.ITEM3 = stat.Item3;
+                                _gamestat.ITEM4 = stat.Item4;
+                                _gamestat.ITEM5 = stat.Item5;
+                                _gamestat.ITEM6 = stat.Item6;
+                                _gamestat.LEGENDARYITEMSCREATED = stat.LegendaryItemsCreated;
+                                _gamestat.TOTALDAMAGEDEALT = stat.TotalDamageDealt;
+                                _gamestat.TOTALDAMAGEDEALTTOCHAMPIONS = stat.TotalDamageDealtToChampions;
+                                _gamestat.DAMAGEDEALTPLAYER = stat.DamageDealtPlayer;
+                                _gamestat.PHYSICALDAMAGEDEALTPLAYER = stat.PhysicalDamageDealtPlayer;
+                                _gamestat.PHYSICALDAMAGEDEALTTOCHAMPIONS = stat.PhysicalDamageDealtToChampions;
+                                _gamestat.LARGESTCRITICALSTRIKE = stat.LargestCriticalStrike;
+                                _gamestat.MAGICDAMAGEDEALTPLAYER = stat.MagicDamageDealtPlayer;
+                                _gamestat.MAGICDAMAGEDEALTTOCHAMPIONS = stat.MagicDamageDealtToChampions;
+                                _gamestat.TRUEDAMAGEDEALTPLAYER = stat.TrueDamageDealtPlayer;
+                                _gamestat.TRUEDAMAGEDEALTTOCHAMPIONS = stat.TrueDamageDealtToChampions;
+                                _gamestat.TOTALDAMAGETAKEN = stat.TotalDamageTaken;
+                                _gamestat.PHYSICALDAMAGETAKEN = stat.PhysicalDamageTaken;
+                                _gamestat.MAGICDAMAGETAKEN = stat.MagicDamageTaken;
+                                _gamestat.TRUEDAMAGETAKEN = stat.TrueDamageTaken;
+                                _gamestat.TOTALHEAL = stat.TotalHeal;
+                                _gamestat.TOTALUNITSHEALED = stat.TotalUnitsHealed;
+                                _gamestat.TOTALTIMECROWDCONTROLDEALT = stat.TotalTimeCrowdControlDealt;
+                                _gamestat.MINIONSDENIED = stat.MinionsDenied;
+                                _gamestat.MINIONSKILLED = stat.MinionsKilled;
+                                _gamestat.NEUTRALMINIONSKILLED = stat.NeutralMinionsKilled;
+                                _gamestat.NEUTRALMINIONSKILLEDYOURJUNGLE = stat.NeutralMinionsKilledYourJungle;
+                                _gamestat.NEUTRALMINIONSKILLEDENEMYJUNGLE = stat.NeutralMinionsKilledEnemyJungle;
+                                _gamestat.SUPERMONSTERKILLED = stat.SuperMonsterKilled;
+                                _gamestat.SIGHTWARDSBOUGHT = stat.SightWardsBought;
+                                _gamestat.VISIONWARDSBOUGHT = stat.VisionWardsBought;
+                                _gamestat.WARDPLACED = stat.WardPlaced;
+                                _gamestat.WARDKILLED = stat.WardKilled;
                             }
                         }
                         ctx.SaveChanges();
@@ -315,3 +534,23 @@ namespace lolmatchhistory
         }
     }
 }
+
+/*
+ * TO-DO LIST:
+ *  1. api key roation (maybe with db)
+ *  2. load mh in depth (other 9 players)
+ *  3. 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+*/

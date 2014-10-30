@@ -29,5 +29,7 @@ namespace lolmatchhistory
         public DbSet<GAME> GAMEs { get; set; }
         public DbSet<SUMMONER> SUMMONERs { get; set; }
         public DbSet<GAMESTAT> GAMESTATs { get; set; }
+        public DbSet<ITEM> ITEMs { get; set; }
+        public DbSet<SPELL> SPELLs { get; set; }
     }
 }

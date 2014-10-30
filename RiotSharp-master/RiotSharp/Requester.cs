@@ -114,15 +114,20 @@ namespace RiotSharp
             switch (response.StatusCode)
             {
                 case HttpStatusCode.ServiceUnavailable:
-                    throw new RiotSharpException("503, Service unavailable");
+                    throw new RiotSharpException("503, Service unavailable"); 
                 case HttpStatusCode.InternalServerError:
                     throw new RiotSharpException("500, Internal server error");
                 case HttpStatusCode.Unauthorized:
-                    throw new RiotSharpException("401, Unauthorized");
+                    throw new RiotSharpException("401, Unauthorized"); 
                 case HttpStatusCode.BadRequest:
-                    throw new RiotSharpException("400, Bad request");
+                    throw new RiotSharpException("400, Bad request"); 
                 case HttpStatusCode.NotFound:
-                    throw new RiotSharpException("404, Resource not found");
+                    throw new RiotSharpException("404, Resource not found"); 
+                default:
+                    if ((int)response.StatusCode == 429)
+                        throw new RiotSharpException("429, Rate Limit reached");
+                    else
+                        throw new RiotSharpException((int)response.StatusCode + ", Unknown Error");
             }
         }
     }

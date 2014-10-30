@@ -27,7 +27,7 @@
           <Property Name="CREATIONDATE" Type="datetime" Precision="0" />
           <Property Name="CREATIONUSER" Type="varchar" MaxLength="45" />
         </EntityType>
-        <EntityType Name="gamestat">
+        <EntityType Name="GAMESTAT">
           <Key>
             <PropertyRef Name="GAMESTAT_ID" />
           </Key>
@@ -42,6 +42,7 @@
           <Property Name="TEAM_ID" Type="uint" />
           <Property Name="WIN" Type="tinyint" />
           <Property Name="TIMEPLAYED" Type="time" Precision="0" />
+          <Property Name="IPEARNED" Type="int" />
           <Property Name="CHAMPIONSKILLED" Type="int" />
           <Property Name="NUMDEATHS" Type="int" />
           <Property Name="ASSISTS" Type="int" />
@@ -99,6 +100,20 @@
           <Property Name="WARDPLACED" Type="int" />
           <Property Name="WARDKILLED" Type="int" />
         </EntityType>
+        <EntityType Name="ITEM">
+          <Key>
+            <PropertyRef Name="ITEM_ID" />
+          </Key>
+          <Property Name="ITEM_ID" Type="int" Nullable="false" />
+          <Property Name="ITEMNAME" Type="varchar" MaxLength="45" />
+        </EntityType>
+        <EntityType Name="SPELL">
+          <Key>
+            <PropertyRef Name="SPELL_ID" />
+          </Key>
+          <Property Name="SPELL_ID" Type="int" Nullable="false" />
+          <Property Name="SPELLNAME" Type="varchar" MaxLength="45" />
+        </EntityType>
         <EntityType Name="SUMMONER">
           <Key>
             <PropertyRef Name="SUMMONER_ID" />
@@ -112,7 +127,9 @@
         <EntityContainer Name="lolmatchhistoryModelStoreContainer">
           <EntitySet Name="CHAMPION" EntityType="Self.CHAMPION" Schema="lolmatchhistory" store:Type="Tables" />
           <EntitySet Name="GAME" EntityType="Self.GAME" Schema="lolmatchhistory" store:Type="Tables" />
-          <EntitySet Name="gamestat" EntityType="Self.gamestat" Schema="lolmatchhistory" store:Type="Tables" />
+          <EntitySet Name="GAMESTAT" EntityType="Self.GAMESTAT" Schema="lolmatchhistory" store:Type="Tables" />
+          <EntitySet Name="ITEM" EntityType="Self.ITEM" Schema="lolmatchhistory" store:Type="Tables" />
+          <EntitySet Name="SPELL" EntityType="Self.SPELL" Schema="lolmatchhistory" store:Type="Tables" />
           <EntitySet Name="SUMMONER" EntityType="Self.SUMMONER" Schema="lolmatchhistory" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -156,6 +173,8 @@
           <EntitySet Name="GAMEs" EntityType="Self.GAME" />
           <EntitySet Name="SUMMONERs" EntityType="Self.SUMMONER" />
           <EntitySet Name="GAMESTATs" EntityType="lolmatchhistoryModel.GAMESTAT" />
+          <EntitySet Name="ITEMs" EntityType="lolmatchhistoryModel.ITEM" />
+          <EntitySet Name="SPELLs" EntityType="lolmatchhistoryModel.SPELL" />
         </EntityContainer>
         <EntityType Name="GAMESTAT">
           <Key>
@@ -228,6 +247,21 @@
           <Property Name="VISIONWARDSBOUGHT" Type="Int32" />
           <Property Name="WARDPLACED" Type="Int32" />
           <Property Name="WARDKILLED" Type="Int32" />
+          <Property Name="IPEARNED" Type="Int32" />
+        </EntityType>
+        <EntityType Name="ITEM">
+          <Key>
+            <PropertyRef Name="ITEM_ID" />
+          </Key>
+          <Property Name="ITEM_ID" Type="Int32" Nullable="false" />
+          <Property Name="ITEMNAME" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="SPELL">
+          <Key>
+            <PropertyRef Name="SPELL_ID" />
+          </Key>
+          <Property Name="SPELL_ID" Type="Int32" Nullable="false" />
+          <Property Name="SPELLNAME" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -272,7 +306,8 @@
           </EntitySetMapping>
           <EntitySetMapping Name="GAMESTATs">
             <EntityTypeMapping TypeName="lolmatchhistoryModel.GAMESTAT">
-              <MappingFragment StoreEntitySet="gamestat">
+              <MappingFragment StoreEntitySet="GAMESTAT">
+                <ScalarProperty Name="IPEARNED" ColumnName="IPEARNED" />
                 <ScalarProperty Name="WARDKILLED" ColumnName="WARDKILLED" />
                 <ScalarProperty Name="WARDPLACED" ColumnName="WARDPLACED" />
                 <ScalarProperty Name="VISIONWARDSBOUGHT" ColumnName="VISIONWARDSBOUGHT" />
@@ -343,6 +378,22 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ITEMs">
+            <EntityTypeMapping TypeName="lolmatchhistoryModel.ITEM">
+              <MappingFragment StoreEntitySet="ITEM">
+                <ScalarProperty Name="ITEMNAME" ColumnName="ITEMNAME" />
+                <ScalarProperty Name="ITEM_ID" ColumnName="ITEM_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SPELLs">
+            <EntityTypeMapping TypeName="lolmatchhistoryModel.SPELL">
+              <MappingFragment StoreEntitySet="SPELL">
+                <ScalarProperty Name="SPELLNAME" ColumnName="SPELLNAME" />
+                <ScalarProperty Name="SPELL_ID" ColumnName="SPELL_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -358,7 +409,7 @@
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
-        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
         <DesignerProperty Name="UseLegacyProvider" Value="true" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
