@@ -57,21 +57,21 @@ namespace lolmatchhistory
     #region Configurations
         private const Region region = RiotSharp.Region.na;
         private List<String> players = new List<String> {"Erndra", "auribug", "faithinyou", "qoobime", "winkybbb", "macaronny", "dextiny", "arwater", "yolobellchan", "masa123", "o0garcia0o", "izayoisaya", "anymoreromfinder", "belibulu", "everloser", "kreivch", "oocosetteoo", "jinusaly", "otiotu", "staxya"};
-        private List<String> includedPlayers = new List<String> {"Erndra", "auribug"};
+        private List<String> includedPlayers = new List<String> {"Erndra", "macaronny"};
         private List<String> excludedPlayers = new List<String> { };
-        private const opting loadPlyaerOption = opting.optOut;
+        private const opting loadPlyaerOption = opting.optIn;
         private const String UserName = "VICTOR";
     #endregion
 
         /**********/
         /** MAIN **/
         /**********/
-        private void form_load(Object sender, EventArgs e)
+        private async void form_load(Object sender, EventArgs e)
         {
             try
             {
                 var start = DateTime.Now;
-                loadRecentGames();
+                Dictionary<String, List<Game>> result = await loadRecentGamesAsync();
                 //reloadChampions();
                 //reloadItems();
                 //reloadSummonerSpells();
@@ -84,7 +84,7 @@ namespace lolmatchhistory
             this.Close();
         }
 
-        private void loadRecentGames()
+        private async Task<Dictionary<String, List<Game>>> loadRecentGamesAsync()
         {
             try
             {
@@ -94,11 +94,15 @@ namespace lolmatchhistory
                     summoners = getSummoners(players); //not implemented
                 }
 
-                Dictionary<String, List<Game>> summonersGames = loadRecentGames(summoners);
+                Task<Dictionary<String, List<Game>>> summonersGamesTask = loadRecentGamesAsync(summoners);
+                Dictionary<String, List<Game>> summonersGames = await summonersGamesTask;
+
+                return summonersGames;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("error caught in " + this.GetType().Name + ".main:"  + Environment.NewLine + ex.ToString(), "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
             }
         }
 
@@ -293,12 +297,14 @@ namespace lolmatchhistory
             return null; //todo
         }
 
-        private Dictionary<String, List<Game>> loadRecentGames(List<Summoner> summoners)
+        private async Task<Dictionary<String, List<Game>>> loadRecentGamesAsync(List<Summoner> summoners)
         {
             Dictionary<String, List<Game>> result = new Dictionary<string,List<Game>>();
             foreach (Summoner summoner in summoners)
             {
-                List<Game> games = loadRecentGames(summoner);
+                Task<List<Game>> gamesTask = loadRecentGamesAsync(summoner);
+
+                List<Game> games = await gamesTask;
                 if (games != null)
                 {
                     result.Add(summoner.Name, games);
@@ -307,22 +313,23 @@ namespace lolmatchhistory
             return result;
         }
 
-        private List<Game> loadRecentGames(Summoner summoner)
+        private async Task<List<Game>> loadRecentGamesAsync(Summoner summoner)
         {
-            List<Game> games;
+            Task<List<Game>> gamesTask;
 
             try
             {
-                games = summoner.GetRecentGames();
+                gamesTask = summoner.GetRecentGamesAsync();
             }
             catch (Exception ex)
             {
                 String custom_msg = "Unable to load recent games data for summoner [" + summoner.Name + "]from server.";
                 String message = custom_msg + Environment.NewLine + Environment.NewLine + ex.ToString();
                 MessageBox.Show(message, "Server Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                games = null;
+                return null;
             }
 
+            List<Game> games = await gamesTask;
             if (games != null && games.Count > 0)
             {
                 try
@@ -540,7 +547,12 @@ namespace lolmatchhistory
  *  1. api key roation (maybe with db)
  *  2. load mh in depth (other 9 players)
  *  3. 
- * 
+ * last update date ()
+ * smaller piece of try catch (if a piece fail, dont fail other)
+ * in-depth load match (templist<loadedplayer>, check gamestat record exist/only do for new game)
+ * store to local if no connection (json of entity model?)
+ * show count of new game/gamestat added
+ *
  * 
  * 
  * 
