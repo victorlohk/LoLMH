@@ -20,32 +20,47 @@ namespace lolmatchhistory
         {
             InitializeComponent();
             this.Load += form_load;
+
+            foreach (String key in ApiKeys)
+            {
+                _apis.Add(RiotApi.GetInstance(key));
+                _staticApis.Add(StaticRiotApi.GetInstance(key));
+            }
+            
         }
 
     #region Properties and Constant
 
-        private const string MY_API_KEY = "005c3a72-9b7d-4f10-9b3b-9e957c1278ee";
+        private static List<string> ApiKeys = new List<String> { "005c3a72-9b7d-4f10-9b3b-9e957c1278ee" }; //, "bc786a7f-7dc8-4750-891f-b5704af3d667"
 
-        private static RiotApi _api;
+        private static List<RiotApi> _apis = new List<RiotApi>();
+        private static int apiIndx;
         private static RiotApi api
         {
             get
             {
-                if (_api == null)
-                    _api = RiotApi.GetInstance(MY_API_KEY);
-                return _api;
+                apiIndx++;
+                if (apiIndx == _apis.Count)
+                {
+                    apiIndx = 0;
+                }
+                return _apis[apiIndx];
             }
             set { }
         }
 
-        private static StaticRiotApi _staticApi;
+        private static List<StaticRiotApi> _staticApis = new List<StaticRiotApi>();
+        private static int staticApiIndx;
         private static StaticRiotApi staticApi
         {
             get
             {
-                if (_staticApi == null)
-                    _staticApi = StaticRiotApi.GetInstance(MY_API_KEY);
-                return _staticApi;
+                staticApiIndx++;
+                if (staticApiIndx == _staticApis.Count)
+                {
+                    staticApiIndx = 0;
+                }
+                return _staticApis[staticApiIndx];
             }
             set { }
         }
@@ -56,12 +71,48 @@ namespace lolmatchhistory
 
     #region Configurations
         private const Region region = RiotSharp.Region.na;
-        private List<String> players = new List<String> {"Erndra", "auribug", "faithinyou", "qoobime", "winkybbb", "macaronny", "dextiny", "arwater", "yolobellchan", "masa123", "o0garcia0o", "izayoisaya", "anymoreromfinder", "belibulu", "everloser", "kreivch", "oocosetteoo", "jinusaly", "otiotu", "staxya"};
-        private List<String> includedPlayers = new List<String> {"Erndra", "macaronny"};
+        private List<String> players = new List<String> { "Erndra", "auribug", "faithinyou", "qoobime", "winkybbb", "macaronny", "dextiny", "arwater", "yolobellchan", "masa123", "o0garcia0o", "izayoisaya", "anymoreromfinder", "belibulu", "everloser", "kreivch", "oocosetteoo", "otiotu", "staxya" }; //"jinusaly",
+        private List<String> includedPlayers = new List<String> { "macaronny", "Erndra", "faithinyou", "qoobime", "winkybbb", "dextiny", "arwater", "yolobellchan", "masa123" };
         private List<String> excludedPlayers = new List<String> { };
-        private const opting loadPlyaerOption = opting.optIn;
+        private const opting loadPlyaerOption = opting.optOut;
         private const String UserName = "VICTOR";
     #endregion
+
+    #region log
+        Dictionary<TimeSpan, String> log = new Dictionary<TimeSpan, String>();
+        DateTime startTime = DateTime.MinValue;
+        private void addLog(String desc)
+        {
+            if (startTime == DateTime.MinValue)
+                startTime = DateTime.Now;
+
+            TimeSpan timeStamp = DateTime.Now - startTime;
+            while (log.ContainsKey(timeStamp))
+            {
+                timeStamp += new TimeSpan(1);
+            }
+            log.Add(timeStamp, desc);
+        }
+
+        private void printLog(Dictionary<TimeSpan, String> log)
+        {
+            if (log == null)
+            {
+                log = this.log;
+            }
+            
+            String msg = "";
+            TimeSpan prev = new TimeSpan(0);
+            foreach (KeyValuePair<TimeSpan, String> l in log)
+            {
+                TimeSpan timeElapsed = l.Key - prev;
+
+                msg += (l.Key).ToString(@"mm\:ss\.fff") + " || elapsed: " + timeElapsed.ToString(@"mm\:ss\.fff") + " || " + l.Value + Environment.NewLine;
+                prev = l.Key;
+            }
+            MessageBox.Show(msg);
+        }
+    #endregion  
 
         /**********/
         /** MAIN **/
@@ -71,11 +122,24 @@ namespace lolmatchhistory
             try
             {
                 var start = DateTime.Now;
+                addLog("start");
+                //List<Summoner> summoners = reloadSummoners(players.Take(1).ToList());
                 Dictionary<String, List<Game>> result = await loadRecentGamesAsync();
+                //Dictionary<String, List<Game>> result = new Dictionary<string, List<Game>>();
+                //Dictionary<String, Task<List<Game>>> gamesTasks = new Dictionary<string, Task<List<Game>>>();
+                //int count = 0;
+                //foreach (Summoner summoner in reloadSummoners(players))
+                //{
+                //    addLog("begin GetRecentGamesAsync #" + count);
+                //    gamesTasks[summoner.Name] = summoner.GetRecentGamesAsync();
+                //    addLog("finish GetRecentGamesAsync #" + count++);
+
+                //}
                 //reloadChampions();
                 //reloadItems();
                 //reloadSummonerSpells();
-                MessageBox.Show("#player: " + players.Count + Environment.NewLine + "time spent: " + (DateTime.Now - start).TotalSeconds);
+                MessageBox.Show("#player: " + /*result.Count +*/ Environment.NewLine + "time spent: " + (DateTime.Now - start).TotalSeconds);
+                printLog(null);        
             }
             catch (Exception ex)
             {
@@ -88,15 +152,18 @@ namespace lolmatchhistory
         {
             try
             {
-                List<Summoner> summoners = reloadSummoners(players);
-                if (summoners == null)
+                List<String> playersToLoad = loadPlyaerOption == opting.optIn ? includedPlayers : players;
+                Dictionary<String, long> summonerIds = getSummonerIds(playersToLoad.Skip(10).Take(10).ToList()); //.Skip(10)
+                if (summonerIds == null || summonerIds.Count < playersToLoad.Count)
                 {
-                    summoners = getSummoners(players); //not implemented
+                     //summoners = reloadSummoners(playersToLoad.ToList()); //Skip(18).Take(9)
                 }
+                addLog("finish reloadSummoners");
 
-                Task<Dictionary<String, List<Game>>> summonersGamesTask = loadRecentGamesAsync(summoners);
+                Task<Dictionary<String, List<Game>>> summonersGamesTask = loadRecentGamesAsync(summonerIds);
                 Dictionary<String, List<Game>> summonersGames = await summonersGamesTask;
 
+                addLog("finish loadRecentGames");
                 return summonersGames;
             }
             catch (Exception ex)
@@ -292,44 +359,112 @@ namespace lolmatchhistory
             return summoners;
         }
 
-        private List<Summoner> getSummoners(List<String> summonerNames)
+        private Dictionary<String,long> getSummonerIds(List<String> summonerNames)
         {
-            return null; //todo
-        }
-
-        private async Task<Dictionary<String, List<Game>>> loadRecentGamesAsync(List<Summoner> summoners)
-        {
-            Dictionary<String, List<Game>> result = new Dictionary<string,List<Game>>();
-            foreach (Summoner summoner in summoners)
-            {
-                Task<List<Game>> gamesTask = loadRecentGamesAsync(summoner);
-
-                List<Game> games = await gamesTask;
-                if (games != null)
-                {
-                    result.Add(summoner.Name, games);
-                }
-            }
-            return result;
-        }
-
-        private async Task<List<Game>> loadRecentGamesAsync(Summoner summoner)
-        {
-            Task<List<Game>> gamesTask;
-
+            Dictionary<String, long> summoners = new Dictionary<String, long>();
             try
             {
-                gamesTask = summoner.GetRecentGamesAsync();
+                using (lolmatchhistoryEntities ctx = new lolmatchhistoryEntities())
+                {
+                    summonerNames = summonerNames.ConvertAll(o => o.ToLower());
+                    List<SUMMONER> models = ctx.SUMMONERs.Where(o => summonerNames.Contains(o.SUMMONERNAME.ToLower().Replace(" ", ""))).ToList();
+                    foreach (SUMMONER model in models)
+                    {
+                        summoners.Add(model.SUMMONERNAME, model.SUMMONER_ID);
+                        //summoners.Add(new Summoner()
+                        //{
+                        //     Id = model.SUMMONER_ID,
+                        //     Name = model.SUMMONERNAME,
+                        //     Level = (long) model.LEVEL,
+                        //     //Region = model.REGION,
+                        //     ProfileIconId =  model.PROFILEICON_ID.HasValue ? model.PROFILEICON_ID.Value : 0,
+                        //     RevisionDate = model.REVISIONDATE.HasValue ? model.REVISIONDATE.Value : DateTime.MinValue,
+                        //});
+                    }
+                }
             }
             catch (Exception ex)
             {
-                String custom_msg = "Unable to load recent games data for summoner [" + summoner.Name + "]from server.";
+                String custom_msg = "Unable to get summoners data from local database";
                 String message = custom_msg + Environment.NewLine + Environment.NewLine + ex.ToString();
-                MessageBox.Show(message, "Server Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return null;
+                MessageBox.Show(message, "DB Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                summoners = null;
             }
+            return summoners;
+        }
 
-            List<Game> games = await gamesTask;
+        private async Task<Dictionary<String, List<Game>>> loadRecentGamesAsync(Dictionary<String, long> summonerIds)
+        {
+            Dictionary<String, List<Game>> result = new Dictionary<string,List<Game>>();
+            Dictionary<String, Task<List<Game>>> gamesTasks = new Dictionary<string, Task<List<Game>>>();
+            int count = 0;
+            foreach (System.Collections.Generic.KeyValuePair<String, long> pair in summonerIds)
+            {
+                addLog("begin GetRecentGamesAsync #" + count);
+                try
+                {
+                    gamesTasks[pair.Key] = api.GetRecentGamesAsync(region, pair.Value);
+                }
+                catch (Exception ex)
+                {
+                    String custom_msg = "Unable to load match data for " + pair.Value + " from server";
+                    String message = custom_msg + Environment.NewLine + Environment.NewLine + ex.ToString();
+                    MessageBox.Show(message, "DB Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    gamesTasks[pair.Key] = null;
+                }
+                addLog("finish GetRecentGamesAsync #" + count++);
+                
+            }
+            addLog("finish all GetRecentGamesAsync");
+
+             count = 0;
+             foreach (System.Collections.Generic.KeyValuePair<String, long> pair in summonerIds)
+            {
+                 try
+                 {
+                     List<Game> games = await gamesTasks[pair.Key];
+                     if (games != null)
+                     {
+                         saveRecentGames(pair.Value, games);
+                         result.Add(pair.Key, games);
+                     }
+                 }
+                 catch (Exception ex)
+                 {
+                     String custom_msg = pair .Value + "in await gamesTasks";
+                     String message = custom_msg + Environment.NewLine + Environment.NewLine + ex.ToString();
+                     MessageBox.Show(message, "DB Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                 }
+                
+                addLog("finish saveRecentGames #" + count++);
+            }
+            addLog("finish all saveRecentGames");
+            
+            return result;
+        }
+
+
+        //private  Task<List<Game>> loadRecentGames(Summoner summoner)
+        //{
+        //    Task<List<Game>> gamesTask;
+
+        //    try
+        //    {
+        //        gamesTask = summoner.GetRecentGamesAsync();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        String custom_msg = "Unable to load recent games data for summoner [" + summoner.Name + "]from server.";
+        //        String message = custom_msg + Environment.NewLine + Environment.NewLine + ex.ToString();
+        //        MessageBox.Show(message, "Server Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //        return null;
+        //    }
+
+        //    return gamesTask;
+        //}
+
+        private void saveRecentGames(long summonerId, List<Game> games)
+        {
             if (games != null && games.Count > 0)
             {
                 try
@@ -346,27 +481,27 @@ namespace lolmatchhistory
                                 _game = new GAME()
                                 {
                                     GAME_ID = game.GameId,
-                                    GAMEDATE = game.CreateDate,
+                                    GAMEDATE = game.CreateDate.AddHours(8),
                                     MAPTYPE = toEnumName(game.MapType),
-                                     GAMEMODE = toEnumName(game.GameMode),
-                                     GAMESUBTYPE = toEnumName(game.SubType),
-                                     IPEARNED = game.IpEarned,
-                                     INVALID = fromBool(game.Invalid),
-                                     CREATIONDATE = DateTime.Now,
-                                     CREATIONUSER = UserName
+                                    GAMEMODE = toEnumName(game.GameMode),
+                                    GAMESUBTYPE = toEnumName(game.SubType),
+                                    IPEARNED = game.IpEarned,
+                                    INVALID = fromBool(game.Invalid),
+                                    CREATIONDATE = DateTime.Now,
+                                    CREATIONUSER = UserName
                                 };
                                 ctx.GAMEs.Add(_game);
                             }
 
-                            GAMESTAT _gamestat = ctx.GAMESTATs.Where(o => o.GAME_ID == game.GameId && o.SUMMONER_ID == summoner.Id).SingleOrDefault();
+                            GAMESTAT _gamestat = ctx.GAMESTATs.Where(o => o.GAME_ID == game.GameId && o.SUMMONER_ID == summonerId).SingleOrDefault();
                             RawStat stat = game.Statistics;
                             if (_gamestat == null) //add 
                             {
-                                
+
                                 _gamestat = new GAMESTAT()
                                 {
                                     GAME_ID = game.GameId,
-                                    SUMMONER_ID = summoner.Id,
+                                    SUMMONER_ID = summonerId,
                                     SUMMONERLEVEL = game.Level,
                                     CHAMPION_ID = game.ChampionId,
                                     CHAMPIONLEVEL = stat.Level,
@@ -438,7 +573,7 @@ namespace lolmatchhistory
                             else //update
                             {
                                 _gamestat.GAME_ID = game.GameId;
-                                _gamestat.SUMMONER_ID = summoner.Id;
+                                _gamestat.SUMMONER_ID = summonerId;
                                 _gamestat.SUMMONERLEVEL = game.Level;
                                 _gamestat.CHAMPION_ID = game.ChampionId;
                                 _gamestat.CHAMPIONLEVEL = stat.Level;
@@ -516,7 +651,6 @@ namespace lolmatchhistory
                     MessageBox.Show(message, "DB Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
-            return games;
         }
 
         private sbyte? fromBool(bool? b)
